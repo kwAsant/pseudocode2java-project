@@ -1,0 +1,116 @@
+/**
+ * @author 15gyekyej
+ * @aim create a program that can decide what the program is going to do each line
+ * 		put simply, allows the algorithm to be performed
+ */
+import java.util.ArrayList ; // import the arraylist
+public class Compiler 
+{
+	private ArrayList<String> szAlgorithm ; 
+	
+	// =========================================================================================================
+	// SETTERS
+	// =========================================================================================================
+	// comments should be removed
+	public void decomposeAlgorithm ( String[] szAlgorithm )
+	{
+		// declare objects
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		// declare variables
+		String szCurrentLine ;
+		int i ; 
+		
+		// this will also set it as well
+		for ( i = 0 ; i < szAlgorithm.length ; i ++ )
+		{
+			// first remove comments and store them in the line
+			szCurrentLine = la.removeComments( szAlgorithm[i] ) ; 
+			
+			// then store in the array
+			szAlgorithm[i] = szCurrentLine ; 
+		} // end for ( getting the relevant information of the algorithm )
+		
+		// then set the algorithm by using a method and storing it into the private array for algorithms
+		setAlgorithm ( szAlgorithm ) ; 
+	} // end procedure ( algorithm is decomposed )
+	
+	public void setAlgorithm( String[] szAlgorithm )
+	{
+		// declare variables
+		int i ;
+		
+		// set the algorithm again
+		// by appending each line to the array list
+		// this is achieved by a for loop
+		for ( i = 0 ; i < szAlgorithm.length ; i ++ )
+		{
+			// add the line of the algorithm to the array list
+			this.szAlgorithm.add(szAlgorithm[i]) ; 
+		} // end for ( setting the algorithm )
+	} // end procedure 
+	
+	// =========================================================================================================
+	// GETTERS
+	// =========================================================================================================
+	public String getLine ( int iLineNum )
+	{
+		// use the get feature to get the current line in the algorithm being pointed to 
+		return this.szAlgorithm.get( iLineNum ) ; 
+	} // end function ( getting the current line )
+	
+	// =========================================================================================================
+	// UTILITIES
+	// =========================================================================================================
+	public int getAction ( String szLine )
+	{
+		// declare 
+		
+		// declare variables
+		String szCommand ; 
+		int iActionID = - 1 ; 
+		
+			
+		return iActionID ;
+	}
+	
+	public String parseAlgorithm ( String szLine )
+	{
+		// declare the lexical analyzer class
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		la
+	}
+
+	public static void main(String[] args) 
+	{
+
+
+		// declare compiler object
+		Compiler compiler = new Compiler () ; 
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		// declare test variable/array 
+		String[] szAlgorithm = {
+				"PRINT (\"Hello World\")",
+				"END"
+		} ; 
+		String szLine ; 
+		final int iStartOfLineID = 0 ;
+		final int iEndOfLineID = szAlgorithm.length ; 
+		int iCurrentLineID = 0 ; 
+		int iActionID ; 
+
+		// do while to look at each item in the array, performing the instructions within
+		do
+		{
+			// get the action that the user would like to perform through checking the line
+			iActionID = compiler.getAction ( compiler.getLine( iCurrentLineID ) ) ; 
+			
+			// increment the current line id 
+			iCurrentLineID ++ ; 
+		} while ( !szAlgorithm[iCurrentLineID].equals("END") || iCurrentLineID == iEndOfLineID ) ; 
+
+	} // end test-rig
+
+}

@@ -1,0 +1,319 @@
+/**
+ * @author 15gyekyej
+ * @aim create a program that can decide what the program is going to do each line
+ * 		put simply, allows the algorithm to be performed
+ */
+import java.util.ArrayList ; // import the arraylist
+public class Compiler 
+{
+	private ArrayList<String> szAlgorithm ; 
+
+	// =========================================================================================================
+	// SETTERS
+	// =========================================================================================================
+	public void setAlgorithm( String[] szAlgorithm )
+	{
+		// declare variables
+		int i ;
+
+		// set the algorithm again
+		// by appending each line to the array list
+		// this is achieved by a for loop
+		for ( i = 0 ; i < szAlgorithm.length ; i ++ )
+		{
+			// add the line of the algorithm to the array list
+			this.szAlgorithm.add(szAlgorithm[i]) ; 
+		} // end for ( setting the algorithm )
+	} // end procedure 
+
+	// =========================================================================================================
+	// GETTERS
+	// =========================================================================================================
+	public String getLine ( int iLineNum )
+	{
+		// use the get feature to get the current line in the algorithm being pointed to 
+		return this.szAlgorithm.get( iLineNum ) ; 
+	} // end function ( getting the current line )
+
+	// =========================================================================================================
+	// UTILITIES
+	// =========================================================================================================
+	public int getAction ( String szLine )
+	{
+		// declare object
+		LexicalAnalyzer la = new LexicalAnalyzer() ; 
+
+		// declare array
+		/*
+		 * these are usually involved with a bracket coming after in written pseudocode
+		 * in order to make the program simpler
+		 */
+		String[] szKeywords = {"PRINT", "=INPUT" , "IFTHEN" , "WHILE" , "DO" , "FOR" , "SWITCH"} ;
+
+		// declare variables for identifying actions
+		// action ID variable has -1 as an error because it shows that there is an error
+		int iActionID = -1 ; // stores an identifier that recognises the action the program is doing
+
+		// declare a variable that stores the state of the variable if the number of btacket match on the line.
+		// it also finds out where the starting and ending brackets of the variable is
+		boolean bBracketsMatch = la.bracketsMatch( szLine ) ; 
+
+		// declare variable for keyword
+		String szKeyword ;
+
+		// if the brackets match variable is true, then move to the next step in finding keywords and necessary parameters
+		if ( bBracketsMatch == true )
+		{
+			if ( la.getFirstOpenBracketIndex() > - 1 && la.getLastCloseBracketIndex() > -1 )
+			{
+				// declare a string buffer to remove the parameter
+				// if there is no brackets in the case of DO-UNTILs
+				StringBuffer szParameter = new StringBuffer ( szLine.substring( la.getFirstOpenBracketIndex() , la.getLastCloseBracketIndex() + 1) ) ; 
+
+				// now get rid of the parameter and trim the result ( using .replace() )
+				szKeyword = szLine.replace(szParameter, "" ) ;
+				szKeyword = szKeyword.replace("\\s","") ;
+			} // end if ( bracket indexes exist )
+			else
+			{
+				// if the private variables are not more than -1 ( their error number ) then make the keyword equal to the line
+				szKeyword = szLine ; 
+			} // end else ( there are no brackets to match )
+
+			// find the information associated with the keywords
+			// the method i have proposed is to check if the line contains the command, then check if the 
+			// line line's keywords before the bracket
+			// use if-elseif-else to check what the pseudocode is going to perform
+			if ( szKeyword.equals( szKeywords[0] ) )
+			{
+				// if the keyword matches "PRINT" then 
+				iActionID = 0 ; 
+			} // end if ( equals "PRINT" )
+			else if ( szKeyword.contains( szKeywords[1] ))
+			{
+				// must be contains as the name of the variable has different names, so its not verified to be true
+				// if the keyword contains '=INPUT', then
+				iActionID = 1 ; 
+			} // end else if ( contains "=INPUT" )
+			else if ( szKeyword.equals( szKeywords[2] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 2 ; 
+			} // end else if ( equals "IFELSE" )
+			else if ( szKeyword.equals( szKeywords[3] ) )
+			{
+				// if the keyword matches "WHILE" then
+				iActionID = 3 ; 	
+			} // end else if ( equals "WHILE" )
+			else if ( szKeyword.equals( szKeywords[4] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 4 ; 	
+			} // end else if ( equals "DO" )
+			else if ( szKeyword.equals( szKeywords[5] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 5 ; 	
+			} // end else if ( equals "FOR" )
+			else if ( szKeyword.equals( szKeywords[6] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 6 ; 	
+			} // end else if ( equals "DO" )
+			else 
+			{
+				// else produce a default error 
+				// links to a class that does so and fetches them
+				System.out.println("Invalid command!");
+
+				// use the action ID and make it -1 
+				iActionID = -1 ; 
+			} // end else ( default response, there is an error present )
+
+			if ( iActionID != -1 )
+			{
+				System.out.println(szKeywords[iActionID]);
+			}
+			else
+			{
+				System.out.println("ERROR! ERROR! ERROR!");
+			}
+		} // end if ( brackets match is true )
+		else
+		{
+			// make the action id the error number
+			iActionID = -1 ; 
+
+			System.out.println("ERROR! ERROR! ERROR! ");
+		} // end else ( brackets match is false )
+
+		// return the action ID
+		return iActionID ; 
+	}
+
+	public void decomposeAlgorithm ( String[] szAlgorithm )
+	{
+		// declare objects
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+
+		// declare variables
+		String szCurrentLine ;
+		int i ; 
+
+		// this will also set it as well
+		for ( i = 0 ; i < szAlgorithm.length ; i ++ )
+		{
+			// first remove comments and store them in the line
+			szCurrentLine = la.removeComments( szAlgorithm[i] ) ; 
+
+			// then store in the array
+			szAlgorithm[i] = szCurrentLine ; 
+		} // end for ( getting the relevant information of the algorithm )
+
+		// then set the algorithm by using a method and storing it into the private array for algorithms
+		setAlgorithm ( szAlgorithm ) ; 
+	} // end procedure ( algorithm is decomposed )
+
+	public void compile ()
+	{
+		// declare test variable/array 
+		String[] szAlgorithm = {
+				"PRINT (\"Hello World\")",
+				"END"
+		} ; 
+		final int iSOLiD = 0 ; // that stores the start of the line id
+		final int iEOLiD = szAlgorithm.length ; // that stores the end of the line id 
+		int iCurrentLineID = 0 ; 
+		int iActionID = -1 ; 
+
+		// do while to look at each item in the array, performing the instructions within
+		do
+		{
+			// get the action that the user would like to perform through checking the line
+			iActionID = getAction ( getLine( iCurrentLineID ) ) ; 
+
+
+
+			// increment the current line id 
+			iCurrentLineID ++ ; 
+		} while ( !szAlgorithm[iCurrentLineID].equals("END") || iCurrentLineID == iEOLiD ) ; 
+	}
+	
+	// test-rig
+	public static void main(String[] args) 
+	{
+		// declare compiler object
+		Compiler compiler = new Compiler () ; 
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		// declare test variable
+		String szLine = "sz=INPUT(\"Hello World\")" ; 
+
+		
+		// declare array
+				/*
+				 * these are usually involved with a bracket coming after in written pseudocode
+				 * in order to make the program simpler
+				 */
+				String[] szKeywords = {"PRINT", "=INPUT" , "IFTHEN" , "WHILE" , "DO" , "FOR" , "SWITCH"} ;
+
+				// declare variables for identifying actions
+				// action ID variable has -1 as an error because it shows that there is an error
+				int iActionID = -1 ; // stores an identifier that recognises the action the program is doing
+
+				// declare a variable that stores the state of the variable if the number of btacket match on the line.
+				// it also finds out where the starting and ending brackets of the variable is
+				boolean bBracketsMatch = la.bracketsMatch( szLine ) ; 
+
+				// declare variable for keyword
+				String szKeyword ;
+
+				// if the brackets match variable is true, then move to the next step in finding keywords and necessary parameters
+				if ( bBracketsMatch == true )
+				{
+					if ( la.getFirstOpenBracketIndex() > - 1 && la.getLastCloseBracketIndex() > -1 )
+					{
+						// declare a string buffer to remove the parameter
+						// if there is no brackets in the case of DO-UNTILs
+						StringBuffer szParameter = new StringBuffer ( szLine.substring( la.getFirstOpenBracketIndex() , la.getLastCloseBracketIndex() + 1) ) ; 
+
+						// now get rid of the parameter and trim the result ( using .replace() )
+						szKeyword = szLine.replace(szParameter, "" ) ;
+						szKeyword = szKeyword.replace("\\s","") ;
+					} // end if ( bracket indexes exist )
+					else
+					{
+						// if the private variables are not more than -1 ( their error number ) then make the keyword equal to the line
+						szKeyword = szLine ; 
+					} // end else ( there are no brackets to match )
+
+					// find the information associated with the keywords
+					// the method i have proposed is to check if the line contains the command, then check if the 
+					// line line's keywords before the bracket
+					// use if-elseif-else to check what the pseudocode is going to perform
+					if ( szKeyword.equals( szKeywords[0] ) )
+					{
+						// if the keyword matches "PRINT" then 
+						iActionID = 0 ; 
+					} // end if ( equals "PRINT" )
+					else if ( szKeyword.contains( szKeywords[1] ))
+					{
+						// must be contains as the name of the variable has different names, so its not verified to be true
+						// if the keyword contains '=INPUT', then
+						iActionID = 1 ; 
+					} // end else if ( contains "=INPUT" )
+					else if ( szKeyword.equals( szKeywords[2] ) )
+					{
+						// if the keyword matches "IFTHEN" then
+						iActionID = 2 ; 
+					} // end else if ( equals "IFELSE" )
+					else if ( szKeyword.equals( szKeywords[3] ) )
+					{
+						// if the keyword matches "WHILE" then
+						iActionID = 3 ; 	
+					} // end else if ( equals "WHILE" )
+					else if ( szKeyword.equals( szKeywords[4] ) )
+					{
+						// if the keyword matches "IFTHEN" then
+						iActionID = 4 ; 	
+					} // end else if ( equals "DO" )
+					else if ( szKeyword.equals( szKeywords[5] ) )
+					{
+						// if the keyword matches "IFTHEN" then
+						iActionID = 5 ; 	
+					} // end else if ( equals "FOR" )
+					else if ( szKeyword.equals( szKeywords[6] ) )
+					{
+						// if the keyword matches "IFTHEN" then
+						iActionID = 6 ; 	
+					} // end else if ( equals "DO" )
+					else 
+					{
+						// else produce a default error 
+						// links to a class that does so and fetches them
+						System.out.println("Invalid command!");
+
+						// use the action ID and make it -1 
+						iActionID = -1 ; 
+					} // end else ( default response, there is an error present )
+					
+					if ( iActionID != -1 )
+					{
+						System.out.println(szKeywords[iActionID]);
+					}
+					else
+					{
+						System.out.println("ERROR! ERROR! ERROR!");
+					}
+				} // end if ( brackets match is true )
+				else
+				{
+					// make the action id the error number
+					iActionID = -1 ; 
+					
+					System.out.println("ERROR! ERROR! ERROR! ");
+				} // end else ( brackets match is false )
+
+	} // end test-rig
+
+}

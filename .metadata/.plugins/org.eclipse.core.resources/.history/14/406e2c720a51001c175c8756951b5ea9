@@ -1,0 +1,86 @@
+/**
+ * @author 15gyekyej
+ * @aim create a program that can decide what the program is going to do each line
+ * 		put simply, allows the algorithm to be performed
+ */
+import java.util.ArrayList ; // import the arraylist
+public class Compiler 
+{
+	private ArrayList<String> szAlgorithm ; 
+	
+	// =========================================================================================================
+	// SETTERS
+	// =========================================================================================================
+	// comments should be removed
+	public void decomposeAlgorithm ( String[] szAlgorithm )
+	{
+		// declare objects
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		// declare variables
+		String szCurrentLine ;
+		int i ; 
+		
+		// this will also set it as well
+		for ( i = 0 ; i < szAlgorithm.length ; i ++ )
+		{
+			szLine = la.parseLine( szAlgorithm[i] ) ; 
+		}
+	} // end procedure ( algorithm is decomposed )
+	
+	public void setAlgorithm( String[] szAlgorithm )
+	{
+		// set the algorithm again
+		
+	} // end procedure ( 
+	// =========================================================================================================
+	// UTILITIES
+	// =========================================================================================================
+	public int getAction ( String szLine )
+	{
+		// declare 
+		
+		// declare variables
+		String szCommand ; 
+		int iActionID = - 1 ; 
+		
+			
+		return iActionID ;
+	}
+	
+	public String parseAlgorithm ( String szLine )
+	{
+		// declare the lexical analyzer class
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		la
+	}
+
+	public static void main(String[] args) 
+	{
+
+
+		// declare compiler object
+		Compiler compiler = new Compiler () ; 
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+		
+		// declare test variable/array 
+		String[] szAlgorithm = {
+				"PRINT (\"Hello World\")",
+				"END"
+		} ; 
+		String szLine ; 
+		int iCurrentLineID = 0 ; 
+		final int iStartOfLineID = 0 ;
+		final int iEndOfLineID = szAlgorithm.length ; 
+
+		// do while to look at each item in the array, performing the instructions within
+		do
+		{
+			
+			System.out.println( szAlgorithm[iCurrentLineID] );
+		} while ( szAlgorithm[iCurrentLineID].equals("END") || iCurrentLineID == iEndOfLineID ) ; 
+
+	} // end test-rig
+
+}

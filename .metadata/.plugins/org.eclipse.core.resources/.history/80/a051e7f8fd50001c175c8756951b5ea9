@@ -1,0 +1,461 @@
+/**
+ * 
+ * @author JOdy Gyekye
+ * @version 1
+ * @aim create a class that handles all of the variables in the program at the time of running
+ */
+import java.util.ArrayList ; // import the ArrayList to handle all of the variables, the number 
+// of arrays can be changed which is the reason for this choice
+public class VariableMethods 
+{
+
+	// declare private ArrayLists that store information about the variables
+	private ArrayList<String> szVariableNames = new ArrayList<String> () ;  // list that stores the name of the variables
+	private ArrayList<String> szVariableTypes = new ArrayList<String> () ; // list that stores the data type of the variables
+	private ArrayList<String> szVariableValues = new ArrayList<String> () ; // list that stores the values of the variables
+
+	// ======================================================================================================================
+	// CONSTRUCTOR: Removes all the values in a variable
+	// ======================================================================================================================	
+	public void reset ()
+	{
+		// clear all the ArrayLists
+		this.szVariableNames.clear() ; 
+		this.szVariableTypes.clear() ; 
+		this.szVariableValues.clear() ; 
+	} // end constructor
+
+	// ======================================================================================================================
+	// SETTERS: this is to change the value of the variables in the arrayList 
+	// ======================================================================================================================	
+	public void addDataType ( String szDataType )
+	{
+		this.szVariableTypes.add(szDataType) ; 
+	} // end setter ( setting the data type )
+
+	public void addVariableName ( String szVariableName )
+	{
+		this.szVariableNames.add(szVariableName) ; 
+	} // end setter ( setting the name of the variable )
+
+	public void addVariableValue ( String szVariableValue )
+	{
+		this.szVariableValues.add(szVariableValue) ; 
+	} // end setter ( setting the value of the variable )
+
+	public void changeVariableValue ( int iRef , String szValue )
+	{
+		this.szVariableValues.set ( iRef , szValue ) ; 
+	} // end setter ( changing the value of a variable )
+
+	public void addVariableInfo ( String szDataType , String szVariableName , String szVariableValue )
+	{
+		// use methods to add data type, variable name and variable value
+		addDataType ( szDataType ) ; 
+		addVariableName ( szVariableName ) ; 
+		addVariableValue ( szVariableValue ) ; 
+	} // end setter ( adding variable information )
+
+	// ======================================================================================================================
+	// GETTERS: this is to fetch the variables in the arrayList 
+	// ======================================================================================================================	
+	public String getVariableName ( int iRef )
+	{
+		// declare variable that will store item in the arrayList
+		String szVariableName = szVariableNames.get(iRef) ; 
+		return szVariableName ; 
+	}
+
+	public ArrayList getVariableNames ()
+	{
+		return this.szVariableNames ; 
+	} // end getter ( getting the list of variable names )
+
+	public String getVariableType ( int iRef )
+	{
+		// declare variable that will store item in the arrayList
+		String szVariableType = szVariableTypes.get(iRef) ; 
+		return szVariableType ; 
+	}
+
+	public String getVariableValue ( int iRef )
+	{
+		// declare variable that will store item in the arrayList
+		String szVariableValue = szVariableValues.get(iRef) ; 
+		return szVariableValue ; 
+	}
+
+	public int getNumOfVariables ()
+	{
+		return this.szVariableNames.size() ; 
+	} // end getter ( number of variables stored )
+
+	// ======================================================================================================================
+	// VARIABLE VALIDATION UTILITIES : Subprograms concerning variables
+	// ======================================================================================================================	
+	public boolean checkIfValid ( String szDataType , String szValue )
+	{
+		// declare variable for validity
+		boolean bValid = false ; 
+
+		// if the data type is a String
+		if ( szDataType.equals("String") )
+		{
+			// use the appropiate method to check if the value is valid
+			bValid = checkIfStringValid ( szValue ) ; 
+		} // end if ( data type is string )
+
+		// if the data type is int
+		if ( szDataType.equals("Int") )
+		{
+			// use the appropiate method to check if the value is valid
+			bValid = checkIfIntValid ( szValue ) ; 
+		}
+
+		// if the data type is float
+		if ( szDataType.equals("Float") )
+		{
+			// use the appropiate method to check if the value is valid
+			bValid = checkIfFloatValid ( szValue ) ; 
+		}
+
+		// if the data type is boolean 
+		if ( szDataType.equals("Boolean") )
+		{
+			// use the appropiate method to check if the value is valid
+			bValid = checkIfBooleanValid ( szValue ) ;
+		}
+
+		// if the data type is a char
+		if ( szDataType.equals("Character") )
+		{
+			// use the appropiate method to check if the value is valid
+			bValid = checkIfCharValid ( szValue ) ;
+		}
+
+		return bValid ;
+	} // end function ( check if data type valid )
+
+	public boolean checkIfStringValid ( String szValue )
+	{
+		// declare variable for validity
+		boolean bValid = false ; 
+
+		// check for if the value matches the regex
+		if ( szValue.charAt(0) == '\"' && szValue.charAt(szValue.length() - 1) == '\"')
+		{
+			bValid = true ;
+		} // end if ( valid string )
+
+		return bValid ; 
+	} // end function ( validity of string )
+
+	public boolean checkIfIntValid ( String szValue )
+	{
+		// declare variable for validity
+		boolean bValid = false ; 
+
+		// if it passes this, therefore it is a valid string
+		if ( szValue.matches("[\\d]*"))
+		{
+			bValid = true ; 
+		} // end if 
+
+		return bValid ; 
+	} // end function ( valid int )
+
+	public boolean checkIfFloatValid ( String szValue )
+	{
+		// declare variable
+		boolean bValid = false ; 
+		int iNumOfDots = 0 ;
+
+		// use for loop to count the number of the dots 
+		// count the number of dots
+		for ( int i = 0 ; i < szValue.length() ; i ++ )
+		{
+			if ( szValue.charAt(i) == '.' )
+			{
+				iNumOfDots ++ ;
+			} // end if ( increment the number of dots )
+		} // end for ( counting the number of dots )
+
+		// use the float section for .determineType to check if the valur of the variable is valid
+		if ( szValue.matches("[\\d]*[\\.]?[\\d]*") && iNumOfDots == 1 )
+		{
+			// set data type to float
+			bValid = true ; 
+		} // end else if ( data type is float )
+
+		return bValid ; 
+	} // end function ( check if float is valid )
+
+	// function to check if the char is valid
+	public boolean checkIfCharValid ( String szValue )
+	{
+		// declare variable for validity
+		boolean bValid = false ;
+
+		// first check if the vaue has quotation marks 
+		// check if the value is one char long ( so the value is 3 characters long ) 
+		if ( szValue.charAt(0) == '\'' && szValue.charAt(2) == '\'' && szValue.length() == 3 )
+		{
+			// if it matches, then make the boolean variable true
+			bValid = true ; 
+		} // end if ( char is valid )
+
+		return bValid ; 
+	} // end function ( check if char is valid )
+
+	// function to check if boolean is valid
+	public boolean checkIfBooleanValid ( String szValue ) 
+	{
+		// declare variable
+		boolean bValid = false ; 
+
+		// check if the value equals "True" or "False"
+		if ( szValue.equals("True") || szValue.equals("False") )
+		{
+			// if it matches that, make the boolean variable true
+			bValid = true ; 
+		} // end if ( the value is "True" or "False" / valid )
+
+		return bValid ; 
+	} // end function ( check if boolean is valid )
+
+
+	// ======================================================================================================================
+	// VARIABLE DECLARATION UTILITIES: Subprograms concerning variables' declaration and searching 
+	// ======================================================================================================================	
+	public String determineType ( String szVariableValue )
+	{
+		// declare variable and set error value 
+		String szDataType = "" ;
+
+		// count the number of dots
+		int iNumOfDots = 0 ;
+
+		// use for loop to count the number of the dots 
+		// count the number of dots
+		for ( int i = 0 ; i < szVariableValue.length() ; i ++ )
+		{
+			if ( szVariableValue.charAt(i) == '.' )
+			{
+				iNumOfDots ++ ;
+			} // end if ( increment the number of dots )
+		} // end for ( counting the number of dots )
+
+		// use .matches () to determine type
+		if ( szVariableValue.charAt(0) == '\"' && szVariableValue.charAt(szVariableValue.length() - 1) == '\"' )
+		{
+			// set the data type to string 
+			szDataType = "String" ; 
+		} // end if ( data type is string )
+		else if ( szVariableValue.matches("[0-9]*") && iNumOfDots == 0 )
+		{
+			// set the data type to int 
+			szDataType = "Int" ; 
+		} // end else if ( data type is int )
+		else if ( szVariableValue.matches("[\\d]*[\\.]?[\\d]*") && iNumOfDots == 1 )
+		{
+			// set data type to float
+			szDataType = "Float" ; 
+		} // end else if ( data type is float )
+		else if ( szVariableValue.equals("True") || szVariableValue.equals("False") )
+		{
+			// set data type to boolean 
+			szDataType = "Boolean" ; 
+		} // end else if ( data type is boolean )
+		else if ( szVariableValue.charAt(0) == '\'' && szVariableValue.charAt(szVariableValue.length() - 1) == '\'' )
+		{
+			// set data type to character
+			szDataType = "Character" ; 
+		} // end else if ( data type is character )
+
+		if ( szDataType == "" )
+		{
+			System.out.println("ERROR! ERROR! ERROR!");
+		}
+		return szDataType ; 
+	} // end function ( determine data type )
+
+
+	public void getVariableData ( String szLine ) 
+	{
+		// split the line based on the equals 
+		// declare variables that stores the variable name and the variable value
+		String szVariableName ; // stores the name of the variable
+		String szVariableValue ; // stores the value of the variable
+		String szDataType ; // stores the data type of the variable
+		int iEqualsIndex = -1 ; // we need to use this so that we don't get too many splits ( as there could be = in the variable value )
+		int iVariableIndex = -1 ; // stores the index of the variable
+		int i ; // used for for loop
+		boolean bFoundEquals = false ; // boolean variable that can find the equals sign in the line 
+		boolean bVariableExists = false ; // boolean variable that checks if the variable already exists, if it does the value will be changed otherwise, it will be declared 
+		boolean bValueValid = false ; // boolean variable to check if the value is valid
+
+		//for loop to find the equals sign
+		for ( i = 0 ; i < szLine.length() ; i ++ )
+		{
+			// if the character in the line is equals to '='
+			if ( szLine.charAt(i) == '=' && bFoundEquals == false )
+			{
+				// set the inddex for the '=' sign
+				iEqualsIndex = i ; 
+
+				// make the boolean variable true
+				bFoundEquals = true ; 
+			} // end if (  first equals is found )
+		} // end for ( searching for the '=' )
+
+		// therefore, use substring to find the variable name and the variable value
+		szVariableName = szLine.substring ( 0 , iEqualsIndex ).replaceAll("\s","") ; 
+		szVariableValue = szLine.substring ( iEqualsIndex + 1 , szLine.length()) ;
+
+		// use the variable value and get the relevant variable information
+		szVariableValue = abstractVariable ( szVariableValue ) ; 
+		
+		System.out.println(szVariableValue);
+		
+		// check if the variable exists using the foundVariable() method
+		bVariableExists = foundVariable ( szVariableName ) ;  
+
+		// if the variable is true, then find its location and then just change the value
+		if ( bVariableExists == true )
+		{
+			// then find the index and then check if the data type is valid for the valid
+			// first get the index of the variable
+			iVariableIndex = findVariableIndex ( szVariableName ) ;
+
+			// check if the value is valid via method by first getting the data type
+			szDataType = getVariableType ( iVariableIndex ) ; 
+
+			// check if the value is valid
+			bValueValid = checkIfValid ( szDataType , szVariableValue ) ; 
+
+			// if the value valid variable is true
+			if ( bValueValid == true )
+			{
+				// then use it to set the value
+				changeVariableValue( iVariableIndex , szVariableValue ) ;
+			} // end if 
+			else
+			{
+				// otherwise report error
+			} // end else ( error )
+		} // end if ( variable exists )
+		else
+		{
+			// otherwise, we create a new variable
+			szDataType = determineType ( szVariableValue ) ; 
+
+			// then use those to add to the variable
+			// we will get all the variable information added to the array list
+			addVariableInfo ( szDataType , szVariableName , szVariableValue ) ;
+		} // end else ( creating new variable )
+	} // end procedure ( get variable data ) 
+
+	public String abstractVariable ( String szVariableValue )
+	{
+		// declare variables
+		String szValue ;
+		int iStartIndex = -1 ; 
+		int iEndIndex = -1 ;
+		int i ;
+		boolean bFoundStart = false ; 
+		
+		for ( i = 0 ; i < szVariableValue.length() ; i ++ )
+		{
+			if ( szVariableValue.charAt(i) != ' ' && bFoundStart == false ) 
+			{
+				// set the start index and end index
+				iStartIndex = i ; 
+				iEndIndex = i ;
+				
+				// set the boolean variable for finding the start of the variable value
+				bFoundStart = true ; 
+			} // end if ( found start index )
+			else if ( szVariableValue.charAt(i) != ' ' && bFoundStart == true )
+			{
+				// set the end index
+				iEndIndex = i ;
+			} // end else if ( found the end index )
+		} // end for ( getting the actual contents of the variable )
+		
+		// get the value of the variable using .substring
+		szValue = szVariableValue.substring ( iStartIndex , iEndIndex ) ; 
+		
+		// return the value
+		return szValue ; 
+	} // end function ( getting the proper value )
+	
+	// ======================================================================================================================
+	// VARIABLE LOCATION UTILITIES : Subprograms concerning variables
+	// ======================================================================================================================	
+	public boolean foundVariable ( String szVariableName )
+	{
+		// declare variables
+		boolean bFound = false ; 
+
+		// if the arrayList contaisn the variable name 
+		if ( getVariableNames().contains(szVariableName) )
+		{
+			// make bFound true
+			bFound = true ; 
+		} // end if ( variable exists )
+
+		return bFound ; 
+	} // end function ( finding the variable )
+
+	public int findVariableIndex ( String szVariableName )
+	{
+		// declare the variable index variable 
+		int iVariableIndex ; 
+
+		// get the location of the variable
+		iVariableIndex = getVariableNames().indexOf ( szVariableName ) ;
+
+		// return the index of the variable
+		return iVariableIndex ; 
+	} // end function ( getting the index of the variable )
+
+	// ======================================================================================================================
+	// VARIABLE VALUE UTILITIES : Subprograms concerning variables
+	// ======================================================================================================================	
+	public float parseFloat ( String szNum )
+	{
+		// declare variables
+		float fNum ;
+
+		// use the parse method
+		fNum = Float.parseFloat( szNum ) ;
+
+		// return the result
+		return fNum ;
+	}
+
+	public float parseInt ( String szNum )
+	{
+		// declare variables
+		int iNum ;
+
+		// use the parse method
+		iNum = Integer.parseInt( szNum ) ;
+
+		// return the result
+		return iNum ;
+	}
+
+
+	// test rig 
+	public static void main(String[] args) 
+	{
+		// declare object
+		VariableMethods vm = new VariableMethods() ; 
+
+		String szLine = "iNum = 24" ;
+
+	vm.getVariableData(szLine) ;
+	} // end test-rig
+
+} // end class ( variable methods )

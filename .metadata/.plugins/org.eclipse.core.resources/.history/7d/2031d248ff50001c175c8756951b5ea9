@@ -1,0 +1,273 @@
+/**
+ * 
+ * @author Jody Gyekye
+ * @version 1
+ * @aim create a program that handles all of the sequence operations
+ */
+import java.util.Scanner ; 
+import java.util.ArrayList ;
+public class SequenceMethods 
+{
+	VariableMethods variables = new VariableMethods() ;
+
+	// ======================================================================================================================
+	// SEQUENCE UTILITIES : This will handle all sequence processes, such as input/output
+	// ======================================================================================================================	
+	public void print( String szLine )
+	{
+		// declare variable that stores the contents of the output
+		String szOutput ;
+
+		// declare variables
+		int iStartBracketIndex = 0; // we need to find the first "(" 
+		int iEndBracketIndex = 0; // this is where the last ")" is
+		int i ;
+		boolean bFoundStartBracket = false ; // value of it is determined by if the start bracket is found 
+		// don't need one for end bracket as it will be the last bracket on the line
+
+		for ( i = 0 ; i < szLine.length() ; i ++ )
+		{
+			// check each character in the line, and look for where the output starts and where the output ends
+			if ( szLine.substring( i, i + 1 ).equalsIgnoreCase("(") && bFoundStartBracket == false )
+			{
+				// make the boolean variable true
+				bFoundStartBracket = true ; 
+
+				// make the start index i
+				iStartBracketIndex = i ; 
+			} // end if ( starting bracket is found )
+			else if ( szLine.substring( i , i + 1 ).equalsIgnoreCase(")"))
+			{
+				// therefore make the end bracket index the correct location
+				iEndBracketIndex = i ; 
+			} // end else if ( ending bracket is found )
+		} // end for ( finding the location of the starting and closing brackets )
+
+		// therefore the output can be found
+		szOutput = szLine.substring( iStartBracketIndex , iEndBracketIndex ) ; 
+
+		// now call the function that deals with getting the valid output so that it can be produced on the line
+		szOutput = fetchOutputValue ( szOutput ) ; 
+
+		// then print the contents
+		System.out.println( szOutput );
+	} // end procedure ( outputting to screen )
+
+	// function to get the valid output ( with the variable names replaced by their values )
+	public String fetchOutputValue ( String szOutput )
+	{
+		// declare object for the sake of validity
+		VariableMethods vm = new VariableMethods() ;
+
+		// declare array list
+		ArrayList<Integer> iSpeechMarkIndices = new ArrayList<Integer>() ;
+		ArrayList<String> szSplit = new ArrayList<String> () ;
+
+		// declare boolean variable
+		boolean bStartString = false ; 
+		boolean bEndString = false ; 
+		boolean bValueValid = false ; 
+		int iVariableIndex ;
+		String szValidOutput = "" ; 
+		
+
+		// try-catch to get an output
+		try
+		{
+			for ( int i = 0 ; i < szOutput.length() ; i ++ )
+			{
+				if ( szOutput.charAt(i) == '\"' && bStartString == false )
+				{
+					// add the index of the speech mark 
+					iSpeechMarkIndices.add(i) ; 
+
+					bStartString = true ; 
+				}
+				else if ( szOutput.charAt(i) == '\"' && bStartString == true )
+				{
+					iSpeechMarkIndices.add(i + 1) ; 
+
+					bEndString = true ; 
+				}
+
+				// if there are still characters, then add the length of the string to the speech mark indices
+				if ( i == szOutput.length() - 1 )
+				{
+					iSpeechMarkIndices.add(i + 1) ; 
+				}
+
+				if ( bStartString == true && bEndString == true )
+				{
+					bStartString = false ; 
+					bEndString = false ; 
+				}
+			} // end for ( valid output )
+
+			if ( bStartString == true && bEndString == false )
+			{
+				// print that it is not valid
+				System.out.println("Not valid!");
+			}
+			else // no proper condition because 
+			{
+				// create an array list using a for loop
+				for ( int i = 0 ; i < iSpeechMarkIndices.size()- 1; i ++ )
+				{
+					szSplit.add(szOutput.substring( iSpeechMarkIndices.get(i) , iSpeechMarkIndices.get(i + 1) )); 
+				}
+
+				// check each aspect of the split
+				// ensure that there are no speech marks and if there are any, remove them using .replace()
+				for ( int i = 0 ; i < szSplit.size() ; i ++ )
+				{
+					if ( szSplit.get(i).contains("\"") )
+					{
+						// remove the speech marks 
+						szSplit.set( i , szSplit.get(i).replaceAll("\"" , "") ) ; 
+					} // end if 
+					else // else if it does not contain speech marks so
+					{
+						szSplit.set( i , szSplit.get(i).replaceAll("[+]" , "")) ; 
+						szSplit.set( i , szSplit.get(i).trim() ) ; 
+
+						// check if the split part contains the variable now 
+						if ( vm.getVariableNames().contains(szSplit.get(i)))
+						{
+							// get the index of the variable, subtract 1 because the arraylist is zero-indexed
+							iVariableIndex = szSplit.indexOf(szSplit.get(i)) - 1 ; 
+
+							// and then replace it with the appropiate variable value
+							szSplit.set(i , vm.getVariableValue( iVariableIndex ) ) ; 
+						} // end if ( the program contains a variable )
+					} // end else ( the split part of the line does not contain a "string" )
+
+					// then add the split part of the line to the output variable 
+					szValidOutput = szValidOutput + szSplit.get(i) ;
+				} // end else ( the output is valid )
+			}
+			// end try ( getting the valid output )
+
+		}
+		catch ( Exception e )
+		{
+			// report the error 
+			System.err.println("Error: " + e );
+		} // end catch
+		return szValidOutput ; 
+	} // end function
+
+	public void input ( String szLine ) 
+	{
+
+	}
+
+	// test rig
+	public static void main(String[] args) 
+	{
+		SequenceMethods sm = new SequenceMethods() ; 
+		VariableMethods vm = new VariableMethods() ;
+
+		// declare scanner
+		Scanner keyboard = new Scanner ( System.in ) ;
+
+		// declare test variable
+		String szLine = "sz = INPUT (\"Please enter something: \")" ;
+
+		// declare variables 
+		String szOutput ; // stores the value of the output to be made 
+		String szVariableName ; // stores the name of the variable
+		String szVariableValue ; // stores the value stored in the variable
+		String szVariableAndCommand ; //
+		int iStartBracketIndex = -1 , iEndBracketIndex = -1 ; // stores the index of the first and last brackets
+		int iEqualsIndex = -1 ; // stores the index of the '=' in the line for input
+		int i ; // used for the for loop
+		int iCurrentVariableNameIndex = 0 ; // stores the index of the current variable in the list
+		boolean bStartBracketFound = false ;  // boolean variable for if the start bracket is found
+		boolean bVariableExists = false ; 
+		boolean bValueValid = false ; 
+
+		// use a for loop to find the start bracket and end bracket
+		for ( i = 0 ; i < szLine.length() ; i ++ )
+		{
+			if ( szLine.charAt(i) == '(' && bStartBracketFound == false )
+			{
+				// set the start bracket index
+				iStartBracketIndex = i ; 
+
+				// set the boolean variable for start bracket found is made true
+				bStartBracketFound = true ; 
+			} // end if ( found the start bracket )
+			else if ( szLine.charAt(i) == ')' )
+			{
+				// set the end bracket index
+				iEndBracketIndex = i ; 
+			} // end else if ( found the end bracket )
+		} // end for ( looking for the bracket indices )
+
+		// it should be that the first part should store the variable name and "= INPUT"
+		// the next parts store the output 
+		szVariableAndCommand = szLine.substring ( 0 , iStartBracketIndex ) ; 
+		szOutput = szLine.substring ( iStartBracketIndex , iEndBracketIndex ) ;
+
+		// use a for loop to find the equals index
+		for ( i = 0 ; i < szVariableAndCommand.length() ; i ++ )
+		{
+			if ( szVariableAndCommand.charAt(i) == '=' )
+			{
+				//set the value of the index if the current character matches it 
+				iEqualsIndex = i ;
+			} // end if ( found an '=' index )
+		} // end for ( searching for '=' )
+
+		// set the variable name
+		szVariableName = szLine.substring( 0 , iEqualsIndex ) ; 
+
+		// put the output to the function that produces an output
+		szOutput = sm.fetchOutputValue ( szOutput ) ; 
+
+		// print the output and store the value in the 'variable value' variable
+		System.out.print(szOutput); 
+		szVariableValue = keyboard.nextLine() ;
+
+		// then first check if the variable exists
+		// we can do ths by checking the size of the variable names	
+		// using the built in method in VariableMethods.java, we can check if there any variables
+		if ( vm.getNumOfVariables() > 0 )
+		{
+			// perform a while loop to search for it [linear search]
+			while ( bVariableExists == false || iCurrentVariableNameIndex == vm.getNumOfVariables() )
+			{
+				// if the variable name equals the name of a variable in the stack ( ArrayList )
+				if ( szVariableName.equals(vm.getVariableName( iCurrentVariableNameIndex )) )
+				{
+					// then set the variable exists boolean variable to true
+					bVariableExists = true ; 
+					
+					// then you simply overwrite
+					// use method in the VariableMethods that sets variable values and does the verification
+					bValueValid = vm.checkIfValid ( vm.getVariableType ( iCurrentVariableNameIndex ) , vm.getVariableValue ( iCurrentVariableNameIndex ) ) ; 
+					
+					// check if the value valid variable is true
+					// if it is, then set the value
+					if ( bValueValid == true )
+					{
+						// use the VariableMethods changeVariableValue method to change the values of the variable
+						vm.changeVariableValue ( iCurrentVariableNameIndex , szVariableValue ) ; 
+					} // end if ( value is valid )
+					else
+					{
+						// report an error and restart the program
+					} // end else ( value isnt valid )
+				} // end if ( variable name is valid )
+			} // end while ( variable search )
+		} // end if ( more than one variable exists )
+		else 
+		{
+			// get the necessary information, by removing the INPUT section
+			vm.getVariableData ( szLine ) ; 
+			
+			System.out.println(vm.getVariableType(0) + " Name: " + vm.getVariableName(0) + " Value: " + vm.getVariableValue(0));
+		}
+	} // end test-rig 
+
+} // end class ( sequence methods )

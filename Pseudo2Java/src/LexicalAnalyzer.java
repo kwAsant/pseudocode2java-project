@@ -1,0 +1,312 @@
+/**
+ * @author Jody Gyekye
+ * @version 1 
+ * @aim create a program that checks the lexicon of the program
+ * 		this can be defined as a syntax diagram
+ */
+public class LexicalAnalyzer 
+{	
+	// ======================================================================================================================
+	// PRIVATE VARIABLES
+	// ======================================================================================================================
+	private int iFirstOpenBracketIndex = -1 ;
+	private int iLastCloseBracketIndex = -1 ; 
+
+	// ======================================================================================================================
+	// SETTERS : This sets the opening and closing bracket indexes
+	// ======================================================================================================================	
+	public void setFirstOpenBracketIndex ( int iIndex )
+	{
+		this.iFirstOpenBracketIndex = iIndex ; 
+	} // end setter ( setting the open bracket index )
+
+	public void setLastCloseBracketIndex ( int iIndex )
+	{
+		this.iLastCloseBracketIndex = iIndex ;
+	} // end setter ( setting the close bracket index )
+
+	// ======================================================================================================================
+	// GETTERS : This gets the opening and closing bracket indexes
+	// ======================================================================================================================	
+	public int getFirstOpenBracketIndex ()
+	{
+		return this.iFirstOpenBracketIndex ; 
+	} // end setter ( setting the open bracket index )
+
+	public int getLastCloseBracketIndex ()
+	{
+		return this.iLastCloseBracketIndex ;
+	} // end setter ( setting the close bracket index )
+
+	// ======================================================================================================================
+	// LEXICAL ANALYSIS UTILITIES : This will be used for lexical analysis 
+	// ======================================================================================================================		
+	// parse line ( which has got the comments removed ) 
+	public int parseLine( String szLine )
+	{
+		// declare array
+		/*
+		 * these are usually involved with a bracket coming after in written pseudocode
+		 * in order to make the program simpler
+		 */
+		String[] szKeywords = {"PRINT", "=INPUT" , "IFTHEN" , "WHILE" , "DO" , "FOR" , "SWITCH"} ;
+
+		// declare variables for identifying actions
+		// action ID variable has -1 as an error because it shows that there is an error
+		int iActionID = -1 ; // stores an identifier that recognises the action the program is doing
+
+		// declare a variable that stores the state of the variable if the number of btacket match on the line.
+		// it also finds out where the starting and ending brackets of the variable is
+		boolean bBracketsMatch = bracketsMatch( szLine ) ; 
+
+		// declare variable for keyword
+		String szKeyword ;
+
+		// if the brackets match variable is true, then move to the next step in finding keywords and necessary parameters
+		if ( bBracketsMatch == true )
+		{
+			if ( getFirstOpenBracketIndex() > - 1 && getLastCloseBracketIndex() > -1 )
+			{
+				// declare a string buffer to remove the parameter
+				// if there is no brackets in the case of DO-UNTILs
+				StringBuffer szParameter = new StringBuffer ( szLine.substring( getFirstOpenBracketIndex() , getLastCloseBracketIndex() + 1) ) ; 
+
+				// now get rid of the parameter and trim the result ( using .replace() )
+				szKeyword = szLine.replace(szParameter, "" ) ;
+				szKeyword = szKeyword.replace("\\s","") ;
+			} // end if ( bracket indexes exist )
+			else
+			{
+				// if the private variables are not more than -1 ( their error number ) then make the keyword equal to the line
+				szKeyword = szLine ; 
+			} // end else ( there are no brackets to match )
+
+			// find the information associated with the keywords
+			// the method i have proposed is to check if the line contains the command, then check if the 
+			// line line's keywords before the bracket
+			// use if-elseif-else to check what the pseudocode is going to perform
+			if ( szKeyword.equals( szKeywords[0] ) )
+			{
+				// if the keyword matches "PRINT" then 
+				iActionID = 0 ; 
+			} // end if ( equals "PRINT" )
+			else if ( szKeyword.contains( szKeywords[1] ))
+			{
+				// must be contains as the name of the variable has different names, so its not verified to be true
+				// if the keyword contains '=INPUT', then
+				iActionID = 1 ; 
+			} // end else if ( contains "=INPUT" )
+			else if ( szKeyword.equals( szKeywords[2] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 2 ; 
+			} // end else if ( equals "IFELSE" )
+			else if ( szKeyword.equals( szKeywords[3] ) )
+			{
+				// if the keyword matches "WHILE" then
+				iActionID = 3 ; 	
+			} // end else if ( equals "WHILE" )
+			else if ( szKeyword.equals( szKeywords[4] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 4 ; 	
+			} // end else if ( equals "DO" )
+			else if ( szKeyword.equals( szKeywords[5] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 5 ; 	
+			} // end else if ( equals "FOR" )
+			else if ( szKeyword.equals( szKeywords[6] ) )
+			{
+				// if the keyword matches "IFTHEN" then
+				iActionID = 6 ; 	
+			} // end else if ( equals "DO" )
+			else 
+			{
+				// else produce a default error 
+				// links to a class that does so and fetches them
+				System.out.println("Invalid command!");
+
+				// use the action ID and make it -1 
+				iActionID = -1 ; 
+			} // end else ( default response, there is an error present )
+			
+			if ( iActionID != -1 )
+			{
+				System.out.println(szKeywords[iActionID]);
+			}
+			else
+			{
+				System.out.println("ERROR! ERROR! ERROR!");
+			}
+		} // end if ( brackets match is true )
+		else
+		{
+			// make the action id the error number
+			iActionID = -1 ; 
+			
+			System.out.println("ERROR! ERROR! ERROR! ");
+		} // end else ( brackets match is false )
+
+		// return the action ID
+		return iActionID ; 
+	} // end procedure ( parsing the line )
+
+	// function that will confirm if the calculation to be performed is valid 
+	public boolean arithmeticSyntaxValid ( String szCalculation )
+	{
+		// declare boolean variable that stores the state the the arithmetic syntax is valid
+		boolean bArithmeticSyntaxValid = false ; 
+
+		// use regex to match the calculation
+		// regex expression found by using regex101.com
+		if (szCalculation.matches("[\\d+\\-*%^\\/()]+[.]*"))
+		{
+			// make the boolean arithmetic syntax variable true
+			bArithmeticSyntaxValid = true ;
+		} // end if ( calculation is valid )
+
+		// return the boolean variable
+		return bArithmeticSyntaxValid ; 
+	} // end function ( arithmetic syntax is valid )
+
+	// function that finds out if the line has a match in the number of brackets
+	// tested successfully
+	public boolean bracketsMatch( String szLine )
+	{
+		// declare utility variables
+		// set an error number for the ints (-1)
+		boolean bBracketsMatch = true ; // stores the variable that ensures that the brackets match
+		int iNumOfOpenBrackets = 0 ; 
+		int iNumOfCloseBrackets = 0 ;
+		int iNumBracketDifference ; 
+		int i = 0 ;
+
+		// for loop to see if the open and close brackets match in number
+		for ( i = 0 ; i < szLine.length() ; i ++ )
+		{
+			if ( szLine.charAt(i) == '(' )
+			{
+				// increment the number of open brackets if the current character is it 
+				iNumOfOpenBrackets ++ ;
+
+				if ( getFirstOpenBracketIndex() == -1 )
+				{
+					// set the first open bracket index to i
+					setFirstOpenBracketIndex(i) ; 
+				} // end if ( setting the first open bracket index )
+			} // end if ( found opening bracket )
+			else if ( szLine.charAt(i) == ')' )
+			{
+				// increment the number of close brackets if the current character is it
+				iNumOfCloseBrackets ++ ; 
+
+				// set the last closing bracket index to i
+				setLastCloseBracketIndex(i) ; 
+			} // end else if ( found closing bracket )
+
+			// calculate the difference in brackets
+			iNumBracketDifference = iNumOfOpenBrackets - iNumOfCloseBrackets ; 
+
+			// check if the number of open brackets match the number of close brackets
+			if ( iNumBracketDifference != 0 )
+			{
+				// if the number of open brackets is not equal to the nnumber of close brackets, then 
+				// make the boolean variable false
+				bBracketsMatch = false ; 
+			} // end if ( difference in brackets is not equal to 0 )
+			else
+			{
+				// else make it true
+				bBracketsMatch = true ; 
+			} // end else ( difference is 0 )
+		} // end for ( check that the brackets match )
+
+		// return the boolean variable for if the brackets match in number
+		return bBracketsMatch ; 
+	} // end procedure ( the brackets match )
+
+	// function to check for cmments and remove parts where comments are present
+	// testing has been done and is successful
+	public String removeComments ( String szLine )
+	{
+		// create an Arraylist that stores each char
+		String[] szChars = szLine.split("") ; 
+
+		// declare variable that stores an edited line 
+		String szLineEdited = szLine ; 
+
+		// iterators that are going to be used for for loop #
+		int i ;
+
+		// declare variables that store information about the line
+		// basically, if there is a comment character that isn't contained within speech 
+		// marks, treat the rest as comments.
+		// so we need to find the location of all of the speech marks 
+		// we can do this via a check of all characters
+		// declare utility variables
+		boolean bStartQuote = false ; 
+		boolean bEndQuote = false ; 
+		boolean bFoundCommentChar1 = false ; 
+		boolean bFoundCommentChar2 = false ; 
+		boolean bFoundCommentIndex = false ;
+		int iCommentIndex = -1 ; 
+
+		// for loop to find the comment index ( if there is one )
+		for ( i = 0 ; i < szLine.length() ; i ++ )
+		{
+			if ( szChars[i].equals("\"") && bStartQuote == false )
+			{
+				bStartQuote = true ;
+			} // end if ( found the open quote )
+			else if ( szChars[i].equals("\"") && bEndQuote == false )
+			{
+				bEndQuote = true ;
+			} // end else if ( found the close quote )
+			else if ( szChars[i].equals("/") && bStartQuote == false && bEndQuote == false && 
+					bFoundCommentChar1 == false )
+			{
+				bFoundCommentChar1 = true ; 
+			}
+			else if ( szChars[i].equals("/") && bStartQuote == false && bEndQuote == false && 
+					bFoundCommentChar1 == true )
+			{
+				bFoundCommentChar2 = true ; 
+				bFoundCommentIndex = true ; 
+
+				iCommentIndex = i - 1 ; 
+			} // end else if ( found comment section )
+
+			// if bStartIndex and bEndIndex are both true, then make them both false
+			if ( bStartQuote == true && bEndQuote == true )
+			{
+				// make them both false again
+				bStartQuote = false ; 
+				bEndQuote = false ; 
+			} // end if ( we have completed a "string" )
+		} // end for ( search for the comment index )
+
+		// then use the comment index ( if it is not -1 ) to remove the remaining code.
+		if ( iCommentIndex > -1 )
+		{
+			szLineEdited = szLine.substring( 0, iCommentIndex ) + "\n" ; 
+		} // end if ( get the comment section removed )
+
+		// return the edited line
+		return szLineEdited ; 
+	} // end function ( removing the comment of the line )
+
+	public static void main(String[] args) 
+	{
+		// declare object
+		LexicalAnalyzer la = new LexicalAnalyzer () ; 
+
+		// declare test variable
+		String szCalculation = "5.2^20.2" ;
+
+		// then test if it works 
+		System.out.println(la.arithmeticSyntaxValid(szCalculation));
+
+	} // end test-rig
+} // end class ( Lexical Analyzer )
+
